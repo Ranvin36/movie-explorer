@@ -1,38 +1,125 @@
-.App {
-  text-align: center;
+body{
+ background-color: rgb(20, 20, 20); 
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Navbar Stylings */
+
+.container{
+    padding: 2% 10%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.navbar{
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
 }
 
-.App-link {
-  color: #61dafb;
+.logo{
+  cursor: pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.logo h1{
+  color: #fff;
+}
+
+.input-field{
+  border: 1px solid #574d4d;
+  width: 900px;
+  padding: 10px 35px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+}
+.input-field input{
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-size: 20px;
+  color: #fff;
+}
+
+.search{
+  background-color: #fff;
+  padding: 10px 25px;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+.logins{
+  display: flex;
+}
+
+.btn{
+  margin: 0 5px;
+}
+
+.logins .outline a{
+  background-color: transparent;
+  border: 1px solid #574d4d;
+  color: #fff;
+}
+
+.btn a{
+  background-color: #fff;
+  padding: 15px 50px;
+  font-size: 17px;
+  text-decoration: none;
+  color: #000;
+  border-radius: 30px;
+}
+
+/* Cards Section */
+.trending{
+  margin: 50px 0;
+}
+
+.trending-title h3{
+  color: #555050;
+  font-weight: 300;
+  font-size: 25px;
+}
+
+.cards-layout{
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.card{
+  position: relative;
+}
+
+.card::after{
+  position: absolute;
+  content: '';
+  background-color: #000;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  border-radius: 20px;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+.card img{
+  width: 220px;
+  border-radius: 20px;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.details{
+  position: absolute;
+  bottom: 30px;
+  left: 15px;
+  color: #fff;
+  z-index: 2;
+}
+
+.sub-details{
+  display: flex;
 }
