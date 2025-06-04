@@ -1,21 +1,29 @@
 import Card from './components/card';
 import './App.css';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 import axios from 'axios';
+import { CiLogout } from "react-icons/ci";
+import { FaRegHandPeace } from "react-icons/fa";
+
+
 
 function App() {
-
+  const {user,isAuthenticated,loginWithRedirect,logout} = useAuth0()
   const [intital,setInitial] = useState([])
   const [searchText,setSearchText] = useState("")
   const [page,setPage] = useState(1)
   const [loading,setLoading] =  useState(0)
+
+
+  function login(){
+  }
 
   async function cacheData(key){
     const data ={
       value:key,
       expiry:  new Date().getTime() + 5 * 60 * 1000
     }
-    console.log("CACHE STORED")
     await localStorage.setItem(searchText,JSON.stringify(data)) 
   }
 
@@ -54,7 +62,6 @@ function App() {
 
   async function getSearchDetails(){
     const cache = getkey(searchText)
-    console.log(cache, "CACHE")
     if(cache){
       setInitial(cache.value)
       return;
@@ -83,7 +90,6 @@ function App() {
   
   useEffect(() => {
       getInitialData(page)
-    
   },[page])
 
   return (
@@ -102,12 +108,21 @@ function App() {
           </div>
         </div>
         <div className='logins'>
-          <div className='btn outline'>
-            <a href="#">Sign In</a>
-          </div>
-          <div className='btn'>
+          {isAuthenticated ?
+            <div className='btn outline'>
+              <p>Hi, {user.nickname}<FaRegHandPeace/></p>
+              <div className='logout'  onClick={() => logout({logoutParams:{returnTo:window.location.origin}})}>
+                <CiLogout color='#fff'/>
+              </div>
+            </div>
+                          :
+            <div className='btn login' onClick={loginWithRedirect}>
+              <a href="#">Sign In</a>
+            </div>
+        }
+          {/* <div className='btn'>
             <a href="#">Sign Up</a>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -129,3 +144,6 @@ function App() {
 }
 
 export default App;
+
+
+// Z29HDGSXXHV9HTCV2ZWWN9MJ
