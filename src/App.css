@@ -54,19 +54,48 @@ body{
   margin: 0 5px;
 }
 
-.logins .outline a{
-  background-color: transparent;
+.outline{
+  display: flex;
+  align-items: center;
+  border-radius: 30px;
   border: 1px solid #574d4d;
+  padding: 7px 20px;
+}
+
+.logout{
+  background-color: #333232 ;
+  margin-left: 20px;
+  border-radius: 50px;
+  width: 20px;
+  height: 20px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: center;
+}
+
+.outline p{
   color: #fff;
 }
 
+.logins .outline a{
+  background-color: transparent;
+  color: #fff;
+  text-align: center;
+}
+
 .btn a{
-  background-color: #fff;
-  padding: 15px 50px;
   font-size: 17px;
   text-decoration: none;
   color: #000;
   border-radius: 30px;
+}
+
+.login a{
+  border: 1px solid #574d4d;
+  padding: 15px 50px;
+  color: #ffff;
 }
 
 /* Cards Section */
