@@ -1,12 +1,14 @@
-import Card from './components/card';
 import './App.css';
+
+import Card from './components/card';
+import throttle from 'lodash.throttle';
+import axios from 'axios';
+
 import { useEffect, useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
-import axios from 'axios';
 import { CiLogout } from "react-icons/ci";
 import { FaRegHandPeace } from "react-icons/fa";
 import {CopperLoading} from 'respinner'
-import throttle from 'lodash.throttle';
 import { GiEmptyWoodBucketHandle } from "react-icons/gi";
 
 
@@ -34,10 +36,12 @@ function App() {
   // Retrieves Results If Exists From LocalStorage
   function getkey(){
     try{      
+      // Returns any cached data stored in local storage
       const data = localStorage.getItem(`${searchText}-${searchPage}`)
       if(data == null) return;
       const currentTime = new Date().getTime() ;
       const item = JSON.parse(data)
+      // The cached data should be stored for 5-mins
       if(currentTime > item.expiry){
          localStorage.removeItem(`${searchText}-${searchPage}`)
          return null
@@ -53,8 +57,8 @@ function App() {
   // Fetching The Initial Data
   async function getInitialData(page){
     if(intital.length >= totalResults)return;
-    // setLoading(true)
     try{
+      // Fetches data from the api and stores in the inital state hook
       const response = await axios.get(`https://www.omdbapi.com/?s=2025&page=${page}&apikey=${REACT_APP_OMDB_API_KEY}`)
           if(response.data.Response === "True"){
             setTotalResults(Number(response.data.totalResults))
@@ -74,12 +78,13 @@ function App() {
 
   // Fetch any searched movies
   async function getSearchDetails(){
-    // if(intital.length >= totalResults) return;
+    // Resets the existing states
     setSearching(true)
     setError("")
     setInitial([])
     setLoading(true)
     
+    // Returns If The Search Results Already Exists In The Cache
     const cache = getkey()
     if(cache){
       setInitial(cache.value)
@@ -87,8 +92,8 @@ function App() {
       return;
     }
     try{
+      // Fetches the data based on the search text 
       const response = await axios.get(`http://www.omdbapi.com/?s=${searchText}&page=${searchPage}&apikey=${REACT_APP_OMDB_API_KEY}`)
-      // console.log(response.data)
       if(response.data.Response === "True"){
         setTotalResults(Number(response.data.totalResults))
         setInitial(response.data.Search)
@@ -108,6 +113,7 @@ function App() {
   
   // Fetching data when scrolling
   async function getSearchData(){
+    // Returns If The Search Results Already Exists In The Cache
     const cache = getkey()
     if(cache){
       setInitial((prev) => [...prev,...cache.value])
@@ -115,6 +121,7 @@ function App() {
       return;
     }
     try{
+        // Fetches the data based on the search text and adds them to the existing state
       const response = await axios.get(`http://www.omdbapi.com/?s=${searchText}&page=${searchPage}&apikey=${REACT_APP_OMDB_API_KEY}`)
       if(response.data.Response === "True"){
         setInitial((prev)=>[...prev,...response.data.Search])
@@ -128,11 +135,12 @@ function App() {
     setLoading(false)
   }
 
-  // Creates a trigger if the user has scrolled to the end
+  // A trigger function used if the user has scrolled to the end
   function handleScroll(){
     const bottom =Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight -500;
       if(bottom){
         setLoading(true)
+        // Updates the page for infinite scrolling
         if(searching){
          setSearchPage((prevPage) => prevPage + 1) 
         }
@@ -143,12 +151,13 @@ function App() {
   }
 
   useEffect(() => {
+    // Returns If The Search Results Already Exists In The Cache
     const cache = getkey()
     if(cache){
       setInitial((prev) => [...prev,...cache.value])
       setLoading(false)
     }
-
+    // A 3-second throttle is applied to prevent exceeding the allowed request rate
     const throttledScroll = throttle(handleScroll,3000)
     window.addEventListener('scroll',throttledScroll);
     return () => {
@@ -157,18 +166,22 @@ function App() {
     
   },[searching,searchPage,searchText])
   
+  // Renders the initial data & scrolling
   useEffect(() => {
       if (!searching){
         getInitialData(page)
       }
   },[page])
 
+
+  // Renders the data for infinite scrolling in the search 
   useEffect(() => {
     if(searching &&  searchPage>1){
       getSearchData(searchPage)
     }
   },[searchPage])
 
+  // Redirects the user to login if not authenticated
   useEffect(() =>{
       if(!isLoading && !isAuthenticated){
         loginWithRedirect()
