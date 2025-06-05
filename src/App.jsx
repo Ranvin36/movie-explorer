@@ -126,10 +126,10 @@ function App() {
 
   useEffect(() => {
     setLoading(true)
-    // const throttledScroll = throttle(handleScroll,3000)
-    window.addEventListener('scroll',handleScroll);
+    const throttledScroll = throttle(handleScroll,3000)
+    window.addEventListener('scroll',throttledScroll);
     return () => {
-      window.removeEventListener('scroll',handleScroll)
+      window.removeEventListener('scroll',throttledScroll)
     }
     
   },[searching])
