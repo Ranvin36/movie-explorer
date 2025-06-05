@@ -157,5 +157,21 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  /* height: 70vh; */
+  height: 50vh;
+}
+
+@media screen and (max-width:1000px) {
+  .navbar{
+    flex-direction: column;
+  }
+
+  .input-field{
+    width: 300px;
+    margin: 20px 0;
+  }
+
+  .cards-layout{
+    align-items: center;
+    justify-content: center;
+  }
 }

@@ -7,6 +7,7 @@ import { CiLogout } from "react-icons/ci";
 import { FaRegHandPeace } from "react-icons/fa";
 import {CopperLoading} from 'respinner'
 import throttle from 'lodash.throttle';
+import { GiEmptyWoodBucketHandle } from "react-icons/gi";
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
   const {REACT_APP_OMDB_API_KEY} = process.env
   const [intital,setInitial] = useState([])
   const [searchText,setSearchText] = useState("")
+  const [error,setError] = useState("")
   const [page,setPage] = useState(1)
   const [searchPage,setSearchPage] = useState(1)
   const [totalResults,setTotalResults] = useState(1)
@@ -21,29 +23,29 @@ function App() {
   const [searching,setSearching] = useState(false)
 
   // Stores the results of a search - caching
-  async function cacheData(value){
+  function cacheData(value){
     const data ={
       value,
       expiry:  new Date().getTime() + 5 * 60 * 1000
     }
-    await localStorage.setItem(searchText,JSON.stringify(data)) 
+    localStorage.setItem(`${searchText}-${searchPage}`,JSON.stringify(data)) 
   }
 
   // Retrieves Results If Exists From LocalStorage
-  function getkey(key){
+  function getkey(){
     try{      
-      const data = localStorage.getItem(key)
+      const data = localStorage.getItem(`${searchText}-${searchPage}`)
       if(data == null) return;
       const currentTime = new Date().getTime() ;
       const item = JSON.parse(data)
       if(currentTime > item.expiry){
-         localStorage.removeItem(key)
+         localStorage.removeItem(`${searchText}-${searchPage}`)
          return null
       }
       return item
     }
     catch(error){
-      localStorage.removeItem(key)
+      localStorage.removeItem(`${searchText}-${searchPage}`)
       console.log(error)
     }
   }
@@ -72,12 +74,13 @@ function App() {
 
   // Fetch any searched movies
   async function getSearchDetails(){
-    if(intital.length >= totalResults) return;
+    // if(intital.length >= totalResults) return;
     setSearching(true)
+    setError("")
     setInitial([])
     setLoading(true)
     
-    const cache = getkey(searchText)
+    const cache = getkey()
     if(cache){
       setInitial(cache.value)
       setLoading(false)
@@ -85,11 +88,16 @@ function App() {
     }
     try{
       const response = await axios.get(`http://www.omdbapi.com/?s=${searchText}&page=${searchPage}&apikey=${REACT_APP_OMDB_API_KEY}`)
+      // console.log(response.data)
       if(response.data.Response === "True"){
         setTotalResults(Number(response.data.totalResults))
         setInitial(response.data.Search)
         cacheData(response.data.Search)
         setSearchPage(2)
+      }
+      else{
+        console.log(response.data.Error)
+        setError(response.data.Error)
       }
     }
     catch(error){
@@ -100,21 +108,31 @@ function App() {
   
   // Fetching data when scrolling
   async function getSearchData(){
+    const cache = getkey()
+    if(cache){
+      setInitial((prev) => [...prev,...cache.value])
+      setLoading(false)
+      return;
+    }
     try{
       const response = await axios.get(`http://www.omdbapi.com/?s=${searchText}&page=${searchPage}&apikey=${REACT_APP_OMDB_API_KEY}`)
       if(response.data.Response === "True"){
         setInitial((prev)=>[...prev,...response.data.Search])
+        cacheData(response.data.Search)
+        
       }
     }
     catch(error){
       console.log(error)
     }
+    setLoading(false)
   }
 
   // Creates a trigger if the user has scrolled to the end
   function handleScroll(){
-      const bottom =Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight -500;
+    const bottom =Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight -500;
       if(bottom){
+        setLoading(true)
         if(searching){
          setSearchPage((prevPage) => prevPage + 1) 
         }
@@ -125,14 +143,19 @@ function App() {
   }
 
   useEffect(() => {
-    setLoading(true)
+    const cache = getkey()
+    if(cache){
+      setInitial((prev) => [...prev,...cache.value])
+      setLoading(false)
+    }
+
     const throttledScroll = throttle(handleScroll,3000)
     window.addEventListener('scroll',throttledScroll);
     return () => {
       window.removeEventListener('scroll',throttledScroll)
     }
     
-  },[searching])
+  },[searching,searchPage,searchText])
   
   useEffect(() => {
       if (!searching){
@@ -193,7 +216,7 @@ function App() {
               :
         <div className="trending">
           <div className="trending-title">
-            <h3>Trending Now</h3>
+            <h3>{searching?`Search Results For ${searchText}`:'Trending Now'}</h3>
           </div>
           <div className="cards-layout">
             {intital && intital.map((item,index) => {
@@ -210,6 +233,12 @@ function App() {
         </div>}
         </div>
       }
+
+      {error.length> 0 ?  
+      <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"40vh",flexDirection:"column"}}>
+        <GiEmptyWoodBucketHandle  size={80} color='#fff'/>
+        <h3 style={{color:"#fff",marginTop:10}}>{error}</h3>
+        </div> :  null}
 
     </div>
   );
