@@ -22,13 +22,13 @@ This application consists of core functionalities:
 ## Setup and Installation
 
 * Set Up Auth0:
-  1.Sign up at https://auth0.com/ and create a new Application (Single Page Web App).
-  2.Note the Domain, Client ID, and set the Callback URL to `http://localhost:3000` in Auth0.
-  3.Go to Authentication > Database, select your connection, and enable the "Disable Sign ups" option to restrict public registration.
-  4.Create a test user in User Management > Users:
+  1. Sign up at https://auth0.com/ and create a new Application (Single Page Web App).
+  2. Note the Domain, Client ID, and set the Callback URL to `http://localhost:3000` in Auth0.
+  3. Go to Authentication > Database, select your connection, and enable the "Disable Sign ups" option to restrict public registration.
+  4. Create a test user in User Management > Users:
     - Email: careers@fidenz.com
     - Password: Pass#fidenz
-  5.Enable MFA via One-time Password & email in Security > Multi-Factor Auth.
+  5. Enable MFA via One-time Password & email in Security > Multi-Factor Auth.
   
 * Clone The Repository
     git clone [https://github.com/Ranvin36/movie-explorer]
