@@ -74,7 +74,7 @@ function App() {
 
   // Fetch any searched movies
   async function getSearchDetails(){
-    if(intital.length >= totalResults) return;
+    // if(intital.length >= totalResults) return;
     setSearching(true)
     setError("")
     setInitial([])
@@ -143,13 +143,19 @@ function App() {
   }
 
   useEffect(() => {
+    const cache = getkey()
+    if(cache){
+      setInitial((prev) => [...prev,...cache.value])
+      setLoading(false)
+    }
+
     const throttledScroll = throttle(handleScroll,3000)
     window.addEventListener('scroll',throttledScroll);
     return () => {
       window.removeEventListener('scroll',throttledScroll)
     }
     
-  },[searching])
+  },[searching,searchPage,searchText])
   
   useEffect(() => {
       if (!searching){
