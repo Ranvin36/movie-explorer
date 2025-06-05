@@ -24,7 +24,7 @@ body{
 
 .input-field{
   border: 1px solid #574d4d;
-  width: 900px;
+  width: 800px;
   padding: 10px 35px;
   border-radius: 20px;
   display: flex;
@@ -35,7 +35,7 @@ body{
   background-color: transparent;
   border: none;
   outline: none;
-  font-size: 20px;
+  font-size: 18px;
   color: #fff;
 }
 
@@ -151,4 +151,11 @@ body{
 
 .sub-details{
   display: flex;
+}
+
+.loader{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* height: 70vh; */
 }

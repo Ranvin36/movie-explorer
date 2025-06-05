@@ -10,7 +10,9 @@ root.render(
     <Auth0Provider 
       domain='dev-14e6exdpg8w6kwvn.us.auth0.com'
       clientId='cD9iHBVUnnGaRgmvpCOqorHp3MNu3toN'
-      authorizationParams={{redirect_uri:window.location.origin}}>
+      authorizationParams={{redirect_uri:window.location.origin}}
+      cacheLocation='localstorage'>
+      
       <App />
     </Auth0Provider>
 );
