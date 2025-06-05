@@ -21,12 +21,21 @@ This application consists of core functionalities:
 
 ## Setup and Installation
 
+* Set Up Auth0:
+- Sign up at https://auth0.com/ and create a new Application (Single Page Web App).
+- Note the Domain, Client ID, and set the Callback URL to `http://localhost:3000` in Auth0.
+- Go to Authentication > Database, select your connection, and enable the "Disable Sign ups" option to restrict public registration.
+- Create a test user in User Management > Users:
+- Email: careers@fidenz.com
+- Password: Pass#fidenz
+- Enable MFA via One-time Password & email in Security > Multi-Factor Auth.
+  
 * Clone The Repository
     git clone [https://github.com/Ranvin36/movie-explorer]
 
 * Install Dependencies:
     ### `npm install`
-
+  
 * Environment Variables
     1. Create a .env file in the root directory.
     2. Add your OMDb API key 
@@ -72,7 +81,7 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 ## Usage
 * How to login - The application uses Auth0 for authentication. You can log in using email-password authentication. After successful email-password login, Multi-Factor Authentication (MFA) is enforced, which can be completed via email verification or an authenticator app.
 
-* How infinite scrolling works - The application implements infinite scrolling to display movie results. As the user scrolls near the end of the current results, a request for the next page of movies is automatically sent. This process is throttled to prevent excessive API calls, ensuring a 2-second delay between consecutive page requests, utilizing lodash.throttle.
+* How infinite scrolling works - The application implements infinite scrolling to display movie results. As the user scrolls near the end of the current results, a request for the next page of movies is automatically sent. This process is throttled to prevent excessive API calls, ensuring a 3-second delay between consecutive page requests, utilizing lodash.throttle.
 
 
 ### Deployment
