@@ -21,29 +21,29 @@ function App() {
   const [searching,setSearching] = useState(false)
 
   // Stores the results of a search - caching
-  async function cacheData(value){
+  function cacheData(value){
     const data ={
       value,
       expiry:  new Date().getTime() + 5 * 60 * 1000
     }
-    await localStorage.setItem(searchText,JSON.stringify(data)) 
+    localStorage.setItem(`${searchText}-${searchPage}`,JSON.stringify(data)) 
   }
 
   // Retrieves Results If Exists From LocalStorage
-  function getkey(key){
+  function getkey(){
     try{      
-      const data = localStorage.getItem(key)
+      const data = localStorage.getItem(`${searchText}-${searchPage}`)
       if(data == null) return;
       const currentTime = new Date().getTime() ;
       const item = JSON.parse(data)
       if(currentTime > item.expiry){
-         localStorage.removeItem(key)
+         localStorage.removeItem(`${searchText}-${searchPage}`)
          return null
       }
       return item
     }
     catch(error){
-      localStorage.removeItem(key)
+      localStorage.removeItem(`${searchText}-${searchPage}`)
       console.log(error)
     }
   }
@@ -77,7 +77,7 @@ function App() {
     setInitial([])
     setLoading(true)
     
-    const cache = getkey(searchText)
+    const cache = getkey()
     if(cache){
       setInitial(cache.value)
       setLoading(false)
@@ -100,10 +100,18 @@ function App() {
   
   // Fetching data when scrolling
   async function getSearchData(){
+    const cache = getkey()
+    if(cache){
+      setInitial((prev) => [...prev,...cache.value])
+      setLoading(false)
+      return;
+    }
     try{
       const response = await axios.get(`http://www.omdbapi.com/?s=${searchText}&page=${searchPage}&apikey=${REACT_APP_OMDB_API_KEY}`)
       if(response.data.Response === "True"){
         setInitial((prev)=>[...prev,...response.data.Search])
+        cacheData(response.data.Search)
+
       }
     }
     catch(error){
@@ -193,7 +201,7 @@ function App() {
               :
         <div className="trending">
           <div className="trending-title">
-            <h3>Trending Now</h3>
+            <h3>{searching?`Search Results For ${searchText}`:'Trending Now'}</h3>
           </div>
           <div className="cards-layout">
             {intital && intital.map((item,index) => {
