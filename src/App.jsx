@@ -7,6 +7,7 @@ import { CiLogout } from "react-icons/ci";
 import { FaRegHandPeace } from "react-icons/fa";
 import {CopperLoading} from 'respinner'
 import throttle from 'lodash.throttle';
+import { GiEmptyWoodBucketHandle } from "react-icons/gi";
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
   const {REACT_APP_OMDB_API_KEY} = process.env
   const [intital,setInitial] = useState([])
   const [searchText,setSearchText] = useState("")
+  const [error,setError] = useState("")
   const [page,setPage] = useState(1)
   const [searchPage,setSearchPage] = useState(1)
   const [totalResults,setTotalResults] = useState(1)
@@ -74,6 +76,7 @@ function App() {
   async function getSearchDetails(){
     if(intital.length >= totalResults) return;
     setSearching(true)
+    setError("")
     setInitial([])
     setLoading(true)
     
@@ -85,11 +88,16 @@ function App() {
     }
     try{
       const response = await axios.get(`http://www.omdbapi.com/?s=${searchText}&page=${searchPage}&apikey=${REACT_APP_OMDB_API_KEY}`)
+      // console.log(response.data)
       if(response.data.Response === "True"){
         setTotalResults(Number(response.data.totalResults))
         setInitial(response.data.Search)
         cacheData(response.data.Search)
         setSearchPage(2)
+      }
+      else{
+        console.log(response.data.Error)
+        setError(response.data.Error)
       }
     }
     catch(error){
@@ -111,18 +119,20 @@ function App() {
       if(response.data.Response === "True"){
         setInitial((prev)=>[...prev,...response.data.Search])
         cacheData(response.data.Search)
-
+        
       }
     }
     catch(error){
       console.log(error)
     }
+    setLoading(false)
   }
 
   // Creates a trigger if the user has scrolled to the end
   function handleScroll(){
-      const bottom =Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight -500;
+    const bottom =Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight -500;
       if(bottom){
+        setLoading(true)
         if(searching){
          setSearchPage((prevPage) => prevPage + 1) 
         }
@@ -133,7 +143,6 @@ function App() {
   }
 
   useEffect(() => {
-    setLoading(true)
     const throttledScroll = throttle(handleScroll,3000)
     window.addEventListener('scroll',throttledScroll);
     return () => {
@@ -218,6 +227,12 @@ function App() {
         </div>}
         </div>
       }
+
+      {error.length> 0 ?  
+      <div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"40vh",flexDirection:"column"}}>
+        <GiEmptyWoodBucketHandle  size={80} color='#fff'/>
+        <h3 style={{color:"#fff",marginTop:10}}>{error}</h3>
+        </div> :  null}
 
     </div>
   );
